@@ -1,27 +1,27 @@
 // Sample data
-let topics = [
-  {
-    id: 1,
-    title: "AI-Powered Code Reviewer",
-    description:
-      "Build an intelligent code review assistant that analyzes pull requests, suggests improvements, and detects potential bugs using machine learning. Looking for ML engineers and frontend developers.",
-    members: ["Alice", "Bob", "Charlie"],
-  },
-  {
-    id: 2,
-    title: "Sustainable City Dashboard",
-    description:
-      "Create a real-time dashboard that tracks and visualizes urban sustainability metrics like energy consumption, air quality, and waste management. Need data visualization experts and backend developers.",
-    members: ["Diana", "Eve"],
-  },
-  {
-    id: 3,
-    title: "Decentralized Social Network",
-    description:
-      "Develop a blockchain-based social media platform that gives users complete control over their data and content. Looking for blockchain developers and UX designers.",
-    members: ["Frank"],
-  },
-];
+// let topics = [
+//   {
+//     id: 1,
+//     title: "AI-Powered Code Reviewer",
+//     description:
+//       "Build an intelligent code review assistant that analyzes pull requests, suggests improvements, and detects potential bugs using machine learning. Looking for ML engineers and frontend developers.",
+//     members: ["Alice", "Bob", "Charlie"],
+//   },
+//   {
+//     id: 2,
+//     title: "Sustainable City Dashboard",
+//     description:
+//       "Create a real-time dashboard that tracks and visualizes urban sustainability metrics like energy consumption, air quality, and waste management. Need data visualization experts and backend developers.",
+//     members: ["Diana", "Eve"],
+//   },
+//   {
+//     id: 3,
+//     title: "Decentralized Social Network",
+//     description:
+//       "Develop a blockchain-based social media platform that gives users complete control over their data and content. Looking for blockchain developers and UX designers.",
+//     members: ["Frank"],
+//   },
+// ];
 
 let currentUserId = "You";
 let userCurrentTopic = null; // ID of topic user is currently in
@@ -46,41 +46,41 @@ function renderTopics() {
     return;
   }
 
-  topicsList.innerHTML = topics
-    .map((topic) => {
-      const isJoined = userCurrentTopic === topic.id;
-      const isMember = topic.members.includes(currentUserId);
-
-      return `
-                    <div class="topic-card ${isJoined ? "joined" : ""}">
-                        <div class="topic-header">
-                            <h3 class="topic-title">${topic.title}</h3>
-                            ${isJoined ? '<span class="joined-badge">✓ Joined</span>' : ""}
-                        </div>
-                        <p class="topic-description">${topic.description}</p>
-                        <div class="topic-footer">
-                            <div class="team-members">
-                                <span class="member-count">👥 ${topic.members.length} member${topic.members.length !== 1 ? "s" : ""}</span>
-                                <div class="members-list">
-                                    ${topic.members
-                                      .slice(0, 5)
-                                      .map(
-                                        (member) =>
-                                          `<div class="member-avatar" title="${member}">${getInitials(member)}</div>`,
-                                      )
-                                      .join("")}
-                                    ${topic.members.length > 5 ? `<div class="member-avatar" title="More members">+${topic.members.length - 5}</div>` : ""}
-                                </div>
-                            </div>
-                            <button class="join-btn ${isJoined ? "leave" : ""}" onclick="toggleJoin(${topic.id})">
-                                ${isJoined ? "Leave Topic" : "Join Topic"}
-                            </button>
-                        </div>
-                    </div>
-                `;
-    })
-    .join("");
-}
+//   topicsList.innerHTML = topics
+//     .map((topic) => {
+//       const isJoined = userCurrentTopic === topic.id;
+//       const isMember = topic.members.includes(currentUserId);
+//
+//       return `
+//                     <div class="topic-card ${isJoined ? "joined" : ""}">
+//                         <div class="topic-header">
+//                             <h3 class="topic-title">${topic.title}</h3>
+//                             ${isJoined ? '<span class="joined-badge">✓ Joined</span>' : ""}
+//                         </div>
+//                         <p class="topic-description">${topic.description}</p>
+//                         <div class="topic-footer">
+//                             <div class="team-members">
+//                                 <span class="member-count">👥 ${topic.members.length} member${topic.members.length !== 1 ? "s" : ""}</span>
+//                                 <div class="members-list">
+//                                     ${topic.members
+//                                       .slice(0, 5)
+//                                       .map(
+//                                         (member) =>
+//                                           `<div class="member-avatar" title="${member}">${getInitials(member)}</div>`,
+//                                       )
+//                                       .join("")}
+//                                     ${topic.members.length > 5 ? `<div class="member-avatar" title="More members">+${topic.members.length - 5}</div>` : ""}
+//                                 </div>
+//                             </div>
+//                             <button class="join-btn ${isJoined ? "leave" : ""}" onclick="toggleJoin(${topic.id})">
+//                                 ${isJoined ? "Leave Topic" : "Join Topic"}
+//                             </button>
+//                         </div>
+//                     </div>
+//                 `;
+//     })
+//     .join("");
+// }
 
 function toggleJoin(topicId) {
   const topic = topics.find((t) => t.id === topicId);

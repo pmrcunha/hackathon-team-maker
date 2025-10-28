@@ -18,12 +18,20 @@ import {
   joinTopic,
   leaveTopic
 } from './db/queries.js'
+import { TopicsList } from './views/topics-list.js'
 
 const app = new Hono()
 
+const currentUser = 'cd4da072-5922-42ef-a38e-50f33b566f8a'
+
 // Landing page
-app.get('/', (c) => {
-  return c.html(<Landing />)
+app.get('/', async (c) => {
+  try {
+    const topics = await getAllTopics()
+    return c.html(<Landing currentUser={currentUser} topics={topics} />)
+  } catch (error) {
+    return c.json({ success: false, error: 'Failed to fetch topics' }, 500)
+  }
 })
 
 // ===== USER CRUD OPERATIONS =====
@@ -278,9 +286,9 @@ app.post('/topics', async (c) => {
       }, 400)
     }
 
-    const topic = await proposeTopic(creatorId, title, description)
-    // return c.json({ success: true, data: topic }, 201)
-    return c.html(<div id="message">Success! Please use /api/topics for API calls.</div>)
+    await proposeTopic(creatorId, title, description)
+    const topics = await getAllTopics()
+    return c.html(<TopicsList topics={topics} currentUser={currentUser} />)
   } catch (error) {
     console.error(error);
     return c.json({ success: false, error: 'Failed to create topic' }, 500)
@@ -295,3 +303,5 @@ serve({
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}`)
 })
+
+

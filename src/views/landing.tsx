@@ -1,4 +1,12 @@
-export function Landing() {
+import type { Topic } from '../db/schema.js';
+import { TopicsList } from './topics-list.js'
+
+type LandingProps = {
+  topics: Topic[];
+  currentUser: string
+}
+
+export function Landing({topics, currentUser}: LandingProps) {
   return <html lang="en">
     <head>
       <meta charset="UTF-8" />
@@ -40,7 +48,7 @@ export function Landing() {
 
         <div class="topics-section">
           <h2>📋 Available Topics</h2>
-          <div id="topicsList"></div>
+          <TopicsList currentUser={currentUser} topics={topics} />
         </div>
       </div>
 
@@ -49,3 +57,5 @@ export function Landing() {
 
   </html>
 }
+
+
