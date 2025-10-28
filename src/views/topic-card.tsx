@@ -7,12 +7,12 @@ type TopicCardProps = {
 
 export function TopicCard({ topic, members, currentUser }: TopicCardProps) {
 
-  const isJoined = false
+  const isJoined = members.some(member => member.id === currentUser)
 
 return <div id={`topic-${topic.id}`} class={`topic-card ${isJoined ? "joined" : ""}`}>
         <div class="topic-header">
           <h3 class="topic-title">{topic.title}</h3>
-          {isJoined ? '<span class="joined-badge">✓ Joined</span>' : ""}
+          {isJoined ? <span class="joined-badge">✓ Joined</span> : null}
         </div>
         <p class="topic-description">{topic.description}</p>
         <div class="topic-footer">
