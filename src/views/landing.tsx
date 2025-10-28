@@ -23,18 +23,20 @@ export function Landing() {
           <form id="proposeForm">
             <div class="form-group">
               <label for="topicTitle">Topic Title *</label>
-              <input type="text" id="topicTitle" name="topicTitle" placeholder="e.g., AI-Powered Climate Monitor" required />
+              <input type="text" id="topicTitle" name="title" placeholder="e.g., AI-Powered Climate Monitor" required />
             </div>
             <div class="form-group">
               <label for="topicDescription">Description *</label>
               <textarea id="topicDescription"
-                name="topicDescription"
+                name="description"
                 placeholder="Describe your topic idea, what you want to build, and what skills would be helpful..."
                 required></textarea>
             </div>
             <button type="submit" data-on:click="@post('/topics', {contentType: 'form'})">Propose Topic</button>
           </form>
         </div>
+
+        <div id="message"></div>
 
         <div class="topics-section">
           <h2>📋 Available Topics</h2>

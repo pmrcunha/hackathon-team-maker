@@ -4,3 +4,6 @@ import * as schema from "./schema.js";
 
 // Create SQLite database connection
 const sqlite = new Database("hackathon.db");
+
+// Create drizzle instance
+export const db = drizzle(sqlite, { schema });

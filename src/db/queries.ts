@@ -1,6 +1,6 @@
-import { db } from "./db"; // Your drizzle database instance
-import { users, topics } from "./schema";
-import { eq, desc, isNull, isNotNull, sql } from "drizzle-orm";
+import { db } from "./db.js"; // Your drizzle database instance
+import { users, topics } from "./schema.js";
+import { eq, desc, isNull } from "drizzle-orm";
 
 /**
  * User Operations
@@ -8,13 +8,39 @@ import { eq, desc, isNull, isNotNull, sql } from "drizzle-orm";
 
 // Create a new user
 export async function createUser(email: string, name: string) {
-  const [user] = await db
+  const result: any = await db
     .insert(users)
     .values({
       email,
       name,
     })
     .returning();
+
+  return result[0];
+}
+
+// Get all users
+export async function getAllUsers() {
+  const allUsers = await db.query.users.findMany({
+    with: {
+      currentTopic: {
+        columns: {
+          id: true,
+          title: true,
+        },
+      },
+    },
+    orderBy: desc(users.createdAt),
+  });
+
+  return allUsers;
+}
+
+// Get user by ID
+export async function getUserById(userId: string) {
+  const user = await db.query.users.findFirst({
+    where: eq(users.id, userId),
+  });
 
   return user;
 }
@@ -36,6 +62,33 @@ export async function getUserWithTopic(userId: string) {
   return user;
 }
 
+// Update user
+export async function updateUser(
+  userId: string,
+  data: { email?: string; name?: string },
+) {
+  const result: any = await db
+    .update(users)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId))
+    .returning();
+
+  return result[0];
+}
+
+// Delete user
+export async function deleteUser(userId: string) {
+  const result: any = await db
+    .delete(users)
+    .where(eq(users.id, userId))
+    .returning();
+
+  return result[0];
+}
+
 /**
  * Topic Operations
  */
@@ -47,29 +100,29 @@ export async function proposeTopic(
   title: string,
   description: string,
 ) {
-  return await db.transaction(async (tx) => {
-    // Create the topic
-    const [topic] = await tx
-      .insert(topics)
-      .values({
-        title,
-        description,
-        creatorId: userId,
-      })
-      .returning();
+  // Create the topic first
+  const topicResult: any = await db
+    .insert(topics)
+    .values({
+      title,
+      description,
+      creatorId: userId,
+    })
+    .returning();
 
-    // Automatically join the user to this topic
-    // This will remove them from any other topic they were in
-    await tx
-      .update(users)
-      .set({
-        currentTopicId: topic.id,
-        updatedAt: new Date(),
-      })
-      .where(eq(users.id, userId));
+  const topic = topicResult[0];
 
-    return topic;
-  });
+  // Automatically join the user to this topic
+  // This will remove them from any other topic they were in
+  await db
+    .update(users)
+    .set({
+      currentTopicId: topic.id,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.id, userId));
+
+  return topic;
 }
 
 // Get all topics with member counts
@@ -238,4 +291,50 @@ export async function getTopicStats(topicId: string) {
     creatorName: topic.creator.name,
     createdAt: topic.createdAt,
   };
+}
+
+// Get topic by ID
+export async function getTopicById(topicId: string) {
+  const topic = await db.query.topics.findFirst({
+    where: eq(topics.id, topicId),
+  });
+
+  return topic;
+}
+
+// Update topic
+export async function updateTopic(
+  topicId: string,
+  data: { title?: string; description?: string },
+) {
+  const result: any = await db
+    .update(topics)
+    .set({
+      ...data,
+      updatedAt: new Date(),
+    })
+    .where(eq(topics.id, topicId))
+    .returning();
+
+  return result[0];
+}
+
+// Delete topic
+export async function deleteTopic(topicId: string) {
+  // First, remove all users from this topic
+  await db
+    .update(users)
+    .set({
+      currentTopicId: null,
+      updatedAt: new Date(),
+    })
+    .where(eq(users.currentTopicId, topicId));
+
+  // Then delete the topic
+  const deleteResult: any = await db
+    .delete(topics)
+    .where(eq(topics.id, topicId))
+    .returning();
+
+  return deleteResult[0];
 }

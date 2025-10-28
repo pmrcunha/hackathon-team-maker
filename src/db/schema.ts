@@ -1,12 +1,11 @@
 import { sqliteTable, text, integer, index } from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
-import { sql } from "drizzle-orm";
 
 /**
  * Users Table
  * Stores user information and tracks which topic they're currently joined to
  */
-export const users = sqliteTable(
+export const users: any = sqliteTable(
   "users",
   {
     id: text("id")
@@ -16,7 +15,7 @@ export const users = sqliteTable(
     name: text("name").notNull(),
 
     // Track which topic the user is currently a member of (can only be one at a time)
-    currentTopicId: text("current_topic_id").references(() => topics.id, {
+    currentTopicId: text("current_topic_id").references((): any => topics.id, {
       onDelete: "set null",
     }),
 
@@ -27,7 +26,7 @@ export const users = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => {
+  (table): any => {
     return {
       emailIdx: index("users_email_idx").on(table.email),
       currentTopicIdx: index("users_current_topic_idx").on(
@@ -41,7 +40,7 @@ export const users = sqliteTable(
  * Topics Table
  * Stores hackathon topic proposals
  */
-export const topics = sqliteTable(
+export const topics: any = sqliteTable(
   "topics",
   {
     id: text("id")
@@ -52,7 +51,7 @@ export const topics = sqliteTable(
 
     // User who proposed/created this topic
     creatorId: text("creator_id")
-      .references(() => users.id, {
+      .references((): any => users.id, {
         onDelete: "cascade",
       })
       .notNull(),
@@ -64,7 +63,7 @@ export const topics = sqliteTable(
       .notNull()
       .$defaultFn(() => new Date()),
   },
-  (table) => {
+  (table): any => {
     return {
       creatorIdx: index("topics_creator_idx").on(table.creatorId),
       createdAtIdx: index("topics_created_at_idx").on(table.createdAt),
