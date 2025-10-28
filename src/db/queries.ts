@@ -138,6 +138,7 @@ export async function getAllTopics() {
       currentMembers: {
         columns: {
           id: true,
+          name: true,
         },
       },
     },
@@ -153,6 +154,7 @@ export async function getAllTopics() {
     creatorName: topic.creator.name,
     createdAt: topic.createdAt,
     memberCount: topic.currentMembers.length,
+    members: topic.currentMembers,
   }));
 }
 

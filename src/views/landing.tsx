@@ -16,7 +16,7 @@ export function Landing({topics, currentUser}: LandingProps) {
       <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
     </head>
 
-    <body>
+    <body data-signals:current-user={`'${currentUser}'`}>
       <div class="container">
         <header>
           <h1>🚀 Hackathon Topics</h1>
@@ -43,8 +43,6 @@ export function Landing({topics, currentUser}: LandingProps) {
             <button type="submit" data-on:click="@post('/topics', {contentType: 'form'})">Propose Topic</button>
           </form>
         </div>
-
-        <div id="message"></div>
 
         <div class="topics-section">
           <h2>📋 Available Topics</h2>

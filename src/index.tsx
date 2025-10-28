@@ -16,11 +16,15 @@ import {
   updateTopic,
   deleteTopic,
   joinTopic,
-  leaveTopic
+  leaveTopic,
+  getUsersInTopic
 } from './db/queries.js'
 import { TopicsList } from './views/topics-list.js'
+import { TopicCard } from './views/topic-card.js'
 
 const app = new Hono()
+
+app.use('/static/*', serveStatic({ root: './' }))
 
 const currentUser = 'cd4da072-5922-42ef-a38e-50f33b566f8a'
 
@@ -28,9 +32,67 @@ const currentUser = 'cd4da072-5922-42ef-a38e-50f33b566f8a'
 app.get('/', async (c) => {
   try {
     const topics = await getAllTopics()
+    console.log(JSON.stringify(topics, null, 2))
     return c.html(<Landing currentUser={currentUser} topics={topics} />)
   } catch (error) {
     return c.json({ success: false, error: 'Failed to fetch topics' }, 500)
+  }
+})
+
+// Create a topic
+app.post('/topics', async (c) => {
+  try {
+    const body = await c.req.parseBody();
+    console.log(body.title, body.description)
+    const title = body.title as string
+    const description = body.description as string
+
+    const creatorId = "cd4da072-5922-42ef-a38e-50f33b566f8a"
+
+    if (!title || !description || !creatorId) {
+      return c.json({
+        success: false,
+        error: 'Title, description, and creatorId are required'
+      }, 400)
+    }
+
+    await proposeTopic(creatorId, title, description)
+    const topics = await getAllTopics()
+    return c.html(<TopicsList topics={topics} currentUser={currentUser} />)
+  } catch (error) {
+    console.error(error);
+    return c.json({ success: false, error: 'Failed to create topic' }, 500)
+  }
+})
+
+
+app.post('/topics/:id/join', async (c) => {
+  try {
+    const topicId = c.req.param('id')
+    const body = await c.req.json()
+
+    const userId = body.userid;
+
+    if (!userId) {
+      return c.json({ success: false, error: 'userId is required' }, 400)
+    }
+
+    // Check if user exists
+    const user = await getUserById(userId)
+    if (!user) {
+      return c.json({ success: false, error: 'User not found' }, 404)
+    }
+
+    await joinTopic(userId, topicId)
+
+    const topics = await getAllTopics()
+    console.log(topics)
+    return c.html(<TopicsList topics={topics} currentUser={currentUser} />)
+  } catch (error: any) {
+    if (error.message?.includes('Topic not found')) {
+      return c.json({ success: false, error: 'Topic not found' }, 404)
+    }
+    return c.json({ success: false, error: 'Failed to join topic' }, 500)
   }
 })
 
@@ -270,32 +332,7 @@ app.post('/api/users/:id/leave-topic', async (c) => {
   }
 })
 
-app.post('/topics', async (c) => {
-  try {
-    const body = await c.req.parseBody();
-    console.log(body.title, body.description)
-    const title = body.title as string
-    const description = body.description as string
 
-    const creatorId = "cd4da072-5922-42ef-a38e-50f33b566f8a"
-
-    if (!title || !description || !creatorId) {
-      return c.json({
-        success: false,
-        error: 'Title, description, and creatorId are required'
-      }, 400)
-    }
-
-    await proposeTopic(creatorId, title, description)
-    const topics = await getAllTopics()
-    return c.html(<TopicsList topics={topics} currentUser={currentUser} />)
-  } catch (error) {
-    console.error(error);
-    return c.json({ success: false, error: 'Failed to create topic' }, 500)
-  }
-})
-
-app.use('/static/*', serveStatic({ root: './' }))
 
 serve({
   fetch: app.fetch,
