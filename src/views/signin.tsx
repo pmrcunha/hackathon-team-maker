@@ -19,7 +19,10 @@ export function Login() {
           </div>
           <div style="margin-bottom: 15px;">
             <label for="password" style="display: block; margin-bottom: 5px;">Password:</label>
-            <input type="password" id="signin-password" placeholder="Password" />
+            <input type="password" id="signin-password" placeholder="Password"
+              required
+              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;"
+            />
           </div>
           <button type="submit"
             style="width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;"

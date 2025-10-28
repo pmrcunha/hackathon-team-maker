@@ -3,10 +3,11 @@ import { TopicsList } from './topics-list.js'
 
 type LandingProps = {
   topics: Topic[];
-  currentUser: string
+  currentUser: any
 }
 
 export function Landing({topics, currentUser}: LandingProps) {
+  console.log(currentUser)
   return <html lang="en">
     <head>
       <meta charset="UTF-8" />
@@ -16,13 +17,13 @@ export function Landing({topics, currentUser}: LandingProps) {
       <script type="module" src="https://cdn.jsdelivr.net/gh/starfederation/datastar@1.0.0-RC.6/bundles/datastar.js"></script>
     </head>
 
-    <body data-signals:current-user={`'${currentUser}'`}>
+    <body data-signals:current-user={`'${currentUser.id}'`}>
       <div class="container">
         <header>
           <h1>🚀 Hackathon Topics</h1>
           <p class="subtitle">Propose your ideas and form your team</p>
-          <div class="current-user">
-            Logged in as: <strong>You</strong>
+          <div onclick="logout()" class="current-user">
+            Logged in as: <strong>{currentUser.name}</strong>
           </div>
         </header>
 
@@ -46,11 +47,12 @@ export function Landing({topics, currentUser}: LandingProps) {
 
         <div class="topics-section">
           <h2>📋 Available Topics</h2>
-          <TopicsList currentUser={currentUser} topics={topics} />
+          <TopicsList currentUser={currentUser.id} topics={topics} />
         </div>
       </div>
 
       <script src="/static/main.js"></script>
+      <script src="/static/logout.js"></script>
     </body>
 
   </html>
