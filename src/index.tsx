@@ -17,26 +17,41 @@ import {
   deleteTopic,
   joinTopic,
   leaveTopic,
-  getUsersInTopic
 } from './db/queries.js'
 import { TopicsList } from './views/topics-list.js'
-import { TopicCard } from './views/topic-card.js'
+import { auth } from './auth.js'
+import { Signup } from './views/signup.js'
+import { Login } from './views/signin.js'
 
 const app = new Hono()
 
 app.use('/static/*', serveStatic({ root: './' }))
+
+app.on(["POST", "GET"], "/api/auth/*", (c) => auth.handler(c.req.raw));
+
 
 const currentUser = 'cd4da072-5922-42ef-a38e-50f33b566f8a'
 
 // Landing page
 app.get('/', async (c) => {
   try {
+    const session = await auth.api.getSession({ headers: c.req.raw.headers });
+
+    if (!session || !session.user) return c.redirect('/login', 302)
+
     const topics = await getAllTopics()
     console.log(JSON.stringify(topics, null, 2))
     return c.html(<Landing currentUser={currentUser} topics={topics} />)
   } catch (error) {
     return c.json({ success: false, error: 'Failed to fetch topics' }, 500)
   }
+})
+
+app.get('/signup', async c => {
+  return c.html(<Signup />)
+})
+app.get('/login', async c => {
+  return c.html(<Login />)
 })
 
 // Create a topic
