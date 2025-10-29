@@ -162,6 +162,7 @@ button:active {
     color: #666;
     margin-bottom: 20px;
     line-height: 1.6;
+    white-space: pre-wrap;
 }
 
 .topic-footer {
